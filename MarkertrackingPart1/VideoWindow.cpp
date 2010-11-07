@@ -11,10 +11,9 @@
 
 namespace TUMAugmentedRealityExercise
 {
-	VideoWindow::VideoWindow(const std::string& name, cv::VideoCapture* video, ImageProcessor* processor)
+	VideoWindow::VideoWindow(const std::string& name, ImageProcessor* processor)
 	{
 		this->name = name;
-		this->video = video;
 		this->processor = processor;
 
 		cvNamedWindow(this->name.c_str());
@@ -25,16 +24,18 @@ namespace TUMAugmentedRealityExercise
 		cvDestroyWindow(this->name.c_str());
 	}
 
-	void VideoWindow::update()
+	std::string VideoWindow::GetName(void)
 	{
-		this->video->retrieve(this->buffer);
+		return this->name;
+	}
 
+	void VideoWindow::update(cv::Mat& image)
+	{
 		cv::Mat result;
 
-		this->processor->process(this->buffer, result);
-
+		this->processor->process(image, result);
+		
 		CvMat copy = result;
-
 		cvShowImage(this->name.c_str(), &copy);
 	}
 

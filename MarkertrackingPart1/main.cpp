@@ -14,24 +14,30 @@
 #include <opencv\highgui.h>
 
 #include "ImageProcessor.h";
+#include "VideoSource.h";
 #include "VideoWindow.h";
+
+#define ESCAPE_KEY 27
+#define C_KEY 99
+#define V_KEY 118
 
 using namespace cv;
 using namespace TUMAugmentedRealityExercise;
 
-int main()
+int main(int argc, char* argv[])
 {
-	int ESCAPE_KEY = 27;
+	bool running = true;
+	Mat buffer;
 
-	VideoCapture video;
+	// setup video input
+	VideoSource* source;
+	VideoSource* camera = new CameraVideoSource();
+	VideoSource* video = NULL;
 
-	std::cout << "Opening default video device" << std::endl;
+	if(argc == 2)
+		video = new FileVideoSource(std::string(argv[1]));
 
-	if(!video.open(0))
-	{
-		std::cout << "Error opening default video device" << std::endl;
-		return 0;
-	}
+	source = camera;
 	
 	// create image processors
 	NullImageProcessor empty;
@@ -41,32 +47,56 @@ int main()
 	ThresholdImageProcessor threshold;
 	threshold.threshold = 104;
 
+	AdaptiveThresholdImageProcessor adaptive;
+
 	// chain various image processors
 	ImageProcessorChain chain1;
 	chain1.add(&grey);
 	chain1.add(&threshold);
 
-	// create ui
-	VideoWindow originWindow("myVideo-Origin", &video, &empty);
-	VideoWindow thresholdWindow("myVideo-Threshold", &video, &chain1);
+	ImageProcessorChain chain2;
+	chain2.add(&grey);
+	chain2.add(&adaptive);
 
-	ThresholdTrackbar tresholdTrackbar("myVideo-Threshold", &threshold);
+	// create ui
+	VideoWindow originWindow("AR-EX1-Origin", &empty);
+	VideoWindow thresholdWindow("AR-EX1-Threshold", &chain1);
+	VideoWindow adaptiveWindow("AR-EX1-AdaptiveThreshold", &chain2);
+
+	ThresholdTrackbar tresholdTrackbar(thresholdWindow.GetName(), &threshold);
 
 	// start ui event loop
-	for(;;)
+	while(running)
 	{
 		// grab next frame
-		video.grab();
+		source->GetNextImage(buffer);
 
 		// process and display current frame
-		originWindow.update();
-		thresholdWindow.update();
-
-		if(waitKey(30) == ESCAPE_KEY)
+		originWindow.update(buffer);
+		thresholdWindow.update(buffer);
+		adaptiveWindow.update(buffer);
+		
+		switch(waitKey(30))
 		{
+		case C_KEY:
+			std::cout << "c key pressed -> switching to camera mode" << std::endl;
+			source = camera;
+			break;
+		case V_KEY:
+			std::cout << "v key pressed -> switching to video mode" << std::endl;
+			if(video != NULL)
+				source = video;
+			break;
+		case ESCAPE_KEY:
+			running = false;
 			break;
 		}
 	}
+
+	delete camera;
+
+	if(video != NULL)
+		delete video;
 
 	return 0;
 }

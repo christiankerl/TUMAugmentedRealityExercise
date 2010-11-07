@@ -84,11 +84,18 @@
   <ItemGroup>
     <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="VideoSource.cpp" />
     <ClCompile Include="VideoWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImageProcessor.h" />
+    <ClInclude Include="VideoSource.h" />
     <ClInclude Include="VideoWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="media\movie.mpg">
+      <DeploymentContent>false</DeploymentContent>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

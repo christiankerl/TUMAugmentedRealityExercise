@@ -24,15 +24,14 @@ namespace TUMAugmentedRealityExercise
 	private:
 		std::string name;
 
-		cv::Mat buffer;
-		cv::VideoCapture* video;
-
 		ImageProcessor* processor;
 	public:
-		VideoWindow(const std::string& name, cv::VideoCapture* video, ImageProcessor* processor);
+		VideoWindow(const std::string& name, ImageProcessor* processor);
 		~VideoWindow(void);
 		
-		void update();
+		std::string GetName(void);
+
+		void update(cv::Mat& image);
 	};
 
 	class ThresholdTrackbar

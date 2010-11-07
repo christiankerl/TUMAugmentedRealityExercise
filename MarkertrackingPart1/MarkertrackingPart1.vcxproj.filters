@@ -24,6 +24,9 @@
     <ClCompile Include="ImageProcessor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="VideoSource.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VideoWindow.h">
@@ -32,5 +35,13 @@
     <ClInclude Include="ImageProcessor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
+    <ClInclude Include="VideoSource.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="media\movie.mpg">
+      <Filter>Ressourcendateien</Filter>
+    </None>
   </ItemGroup>
 </Project>
