@@ -15,8 +15,13 @@
 #include <opencv\cv.h>
 #include <opencv\highgui.h>
 
+#include "MemoryStorage.h"
+
 namespace TUMAugmentedRealityExercise
 {
+	typedef std::vector<cv::Point > Marker;
+	typedef std::vector<Marker > MarkerContainer;
+
 	class ImageProcessor
 	{
 	public:
@@ -38,7 +43,7 @@ namespace TUMAugmentedRealityExercise
 		GreyscaleImageProcessor(void) {};
 		~GreyscaleImageProcessor(void) {};
 
-		void process(cv::Mat& input, cv::Mat& output);;
+		void process(cv::Mat& input, cv::Mat& output);
 	};
 
 	class ThresholdImageProcessor : public ImageProcessor
@@ -49,7 +54,7 @@ namespace TUMAugmentedRealityExercise
 		ThresholdImageProcessor(void) {};
 		~ThresholdImageProcessor(void) {};
 
-		void process(cv::Mat& input, cv::Mat& output);;
+		void process(cv::Mat& input, cv::Mat& output);
 	};
 
 	class AdaptiveThresholdImageProcessor : public ImageProcessor
@@ -58,7 +63,32 @@ namespace TUMAugmentedRealityExercise
 		AdaptiveThresholdImageProcessor(void) {};
 		~AdaptiveThresholdImageProcessor(void) {};
 
-		void process(cv::Mat& input, cv::Mat& output);;
+		void process(cv::Mat& input, cv::Mat& output);
+	};
+
+	class MarkerDetectionImageProcessor : public ImageProcessor
+	{
+	private:
+		const MemoryStorage* memory;
+		MarkerContainer* markers;
+	public:
+		MarkerDetectionImageProcessor(const MemoryStorage* memory, MarkerContainer* markers);
+		~MarkerDetectionImageProcessor(void) {};
+
+		void process(cv::Mat& input, cv::Mat& output);
+	};
+
+	class MarkerHighlightImageProcessor : public ImageProcessor
+	{
+	private:
+		const MarkerContainer* markers;
+
+		void HighlightMarker(cv::Mat& image, const Marker& marker);
+	public:
+		MarkerHighlightImageProcessor(const MarkerContainer* markers);
+		~MarkerHighlightImageProcessor(void) {};
+
+		void process(cv::Mat& input, cv::Mat& output);
 	};
 
 	class ImageProcessorChain : public ImageProcessor

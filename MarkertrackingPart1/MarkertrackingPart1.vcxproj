@@ -43,7 +43,7 @@
     <IncludePath>$(OPENCV_HOME)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(OPENCV_HOME)\lib;$(LibraryPath)</LibraryPath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
-    <SourcePath>$(OPENCV_HOME)\src\cv;$(SourcePath)</SourcePath>
+    <SourcePath>D:\development\infrastructure\opencv\OpenCV2.1\src;$(SourcePath)</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -55,12 +55,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>cv210d.lib;cxcore210d.lib;highgui210d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cv210d.lib;cvaux210d.lib;cxcore210d.lib;highgui210d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -84,11 +85,13 @@
   <ItemGroup>
     <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MemoryStorage.cpp" />
     <ClCompile Include="VideoSource.cpp" />
     <ClCompile Include="VideoWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ImageProcessor.h" />
+    <ClInclude Include="MemoryStorage.h" />
     <ClInclude Include="VideoSource.h" />
     <ClInclude Include="VideoWindow.h" />
   </ItemGroup>

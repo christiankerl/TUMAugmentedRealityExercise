@@ -15,7 +15,7 @@
 #include <opencv\cv.h>
 #include <opencv\highgui.h>
 
-#include "ImageProcessor.h";
+#include "ImageProcessor.h"
 
 namespace TUMAugmentedRealityExercise
 {

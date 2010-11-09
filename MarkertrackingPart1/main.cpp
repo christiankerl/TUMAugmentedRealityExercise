@@ -13,9 +13,10 @@
 #include <opencv\cv.h>
 #include <opencv\highgui.h>
 
-#include "ImageProcessor.h";
-#include "VideoSource.h";
-#include "VideoWindow.h";
+#include "MemoryStorage.h"
+#include "ImageProcessor.h"
+#include "VideoSource.h"
+#include "VideoWindow.h"
 
 #define ESCAPE_KEY 27
 #define C_KEY 99
@@ -28,7 +29,7 @@ int main(int argc, char* argv[])
 {
 	bool running = true;
 	Mat buffer;
-
+	
 	// setup video input
 	VideoSource* source;
 	VideoSource* camera = new CameraVideoSource();
@@ -37,34 +38,33 @@ int main(int argc, char* argv[])
 	if(argc == 2)
 		video = new FileVideoSource(std::string(argv[1]));
 
-	source = camera;
+	source = video;
 	
+	// create dynamic memory
+	MemoryStorage memory;
+
+	MarkerContainer markers;
+
 	// create image processors
-	NullImageProcessor empty;
-
 	GreyscaleImageProcessor grey;
-
-	ThresholdImageProcessor threshold;
-	threshold.threshold = 104;
-
 	AdaptiveThresholdImageProcessor adaptive;
+	MarkerDetectionImageProcessor marker(&memory, &markers);
+
+	MarkerHighlightImageProcessor highlight(&markers);
 
 	// chain various image processors
 	ImageProcessorChain chain1;
 	chain1.add(&grey);
-	chain1.add(&threshold);
-
-	ImageProcessorChain chain2;
-	chain2.add(&grey);
-	chain2.add(&adaptive);
+	chain1.add(&adaptive);
+	chain1.add(&marker);
 
 	// create ui
-	VideoWindow originWindow("AR-EX1-Origin", &empty);
+	VideoWindow originWindow("AR-EX1-Origin", &highlight);
 	VideoWindow thresholdWindow("AR-EX1-Threshold", &chain1);
-	VideoWindow adaptiveWindow("AR-EX1-AdaptiveThreshold", &chain2);
+	//VideoWindow adaptiveWindow("AR-EX1-AdaptiveThreshold", &chain2);
 
-	ThresholdTrackbar tresholdTrackbar(thresholdWindow.GetName(), &threshold);
-
+	//ThresholdTrackbar tresholdTrackbar(thresholdWindow.GetName(), &threshold);
+	
 	// start ui event loop
 	while(running)
 	{
@@ -72,10 +72,15 @@ int main(int argc, char* argv[])
 		source->GetNextImage(buffer);
 
 		// process and display current frame
-		originWindow.update(buffer);
-		thresholdWindow.update(buffer);
-		adaptiveWindow.update(buffer);
+		//chain1.process(buffer, Mat());
 		
+		thresholdWindow.update(buffer);
+		originWindow.update(buffer);
+
+		// clear memory resources
+		memory.Clear();
+		markers.clear();
+
 		switch(waitKey(30))
 		{
 		case C_KEY:
