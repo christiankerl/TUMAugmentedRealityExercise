@@ -47,6 +47,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(OPENCV_HOME)\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OPENCV_HOME)\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -80,9 +82,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>cv210.lib;cvaux210.lib;cxcore210.lib;highgui210.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FPSMonitor.cpp" />
     <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MemoryStorage.cpp" />
@@ -90,15 +94,14 @@
     <ClCompile Include="VideoWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FPSMonitor.h" />
     <ClInclude Include="ImageProcessor.h" />
     <ClInclude Include="MemoryStorage.h" />
     <ClInclude Include="VideoSource.h" />
     <ClInclude Include="VideoWindow.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="media\movie.mpg">
-      <DeploymentContent>false</DeploymentContent>
-    </None>
+    <None Include="media\movie.mpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -31,12 +31,9 @@ namespace TUMAugmentedRealityExercise
 
 	void VideoWindow::update(cv::Mat& image)
 	{
-		cv::Mat result;
+		this->processor->process(image, resultBuffer);
 
-		this->processor->process(image, result);
-		
-		CvMat copy = result;
-		cvShowImage(this->name.c_str(), &copy);
+		cvShowImage(this->name.c_str(), &((CvMat) resultBuffer));
 	}
 
 	ThresholdTrackbar::ThresholdTrackbar(const std::string& window, ThresholdImageProcessor* processor)

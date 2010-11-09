@@ -12,6 +12,8 @@
     <Filter Include="Ressourcendateien">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+      <ParseFiles>false</ParseFiles>
+      <SourceControlFiles>False</SourceControlFiles>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,6 +32,9 @@
     <ClCompile Include="MemoryStorage.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="FPSMonitor.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VideoWindow.h">
@@ -42,6 +47,9 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="MemoryStorage.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="FPSMonitor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

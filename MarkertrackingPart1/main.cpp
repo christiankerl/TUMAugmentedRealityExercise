@@ -17,6 +17,7 @@
 #include "ImageProcessor.h"
 #include "VideoSource.h"
 #include "VideoWindow.h"
+#include "FPSMonitor.h"
 
 #define ESCAPE_KEY 27
 #define C_KEY 99
@@ -28,7 +29,8 @@ using namespace TUMAugmentedRealityExercise;
 int main(int argc, char* argv[])
 {
 	bool running = true;
-	Mat buffer;
+	Mat inBuffer;
+	Mat outBuffer;
 	
 	// setup video input
 	VideoSource* source;
@@ -38,8 +40,11 @@ int main(int argc, char* argv[])
 	if(argc == 2)
 		video = new FileVideoSource(std::string(argv[1]));
 
-	source = video;
+	source = camera;
 	
+	FPSMonitor fps;
+	fps.SetVideoSourceFPS(source->GetFPS());
+
 	// create dynamic memory
 	MemoryStorage memory;
 
@@ -57,10 +62,10 @@ int main(int argc, char* argv[])
 	chain1.add(&grey);
 	chain1.add(&adaptive);
 	chain1.add(&marker);
-
+	
 	// create ui
 	VideoWindow originWindow("AR-EX1-Origin", &highlight);
-	VideoWindow thresholdWindow("AR-EX1-Threshold", &chain1);
+	//VideoWindow thresholdWindow("AR-EX1-Threshold", &chain1);
 	//VideoWindow adaptiveWindow("AR-EX1-AdaptiveThreshold", &chain2);
 
 	//ThresholdTrackbar tresholdTrackbar(thresholdWindow.GetName(), &threshold);
@@ -68,29 +73,37 @@ int main(int argc, char* argv[])
 	// start ui event loop
 	while(running)
 	{
+		fps.BeginProcessing();
+
 		// grab next frame
-		source->GetNextImage(buffer);
+		source->GetNextImage(inBuffer);
 
 		// process and display current frame
-		//chain1.process(buffer, Mat());
+		chain1.process(inBuffer, outBuffer);
 		
-		thresholdWindow.update(buffer);
-		originWindow.update(buffer);
+		//thresholdWindow.update(inBuffer);
+		originWindow.update(inBuffer);
 
 		// clear memory resources
 		memory.Clear();
 		markers.clear();
 
-		switch(waitKey(30))
+		fps.EndProcessing();
+
+		switch(waitKey(fps.GetMsUntilNextFrame()))
 		{
 		case C_KEY:
 			std::cout << "c key pressed -> switching to camera mode" << std::endl;
 			source = camera;
+
+			fps.SetVideoSourceFPS(source->GetFPS());
 			break;
 		case V_KEY:
 			std::cout << "v key pressed -> switching to video mode" << std::endl;
 			if(video != NULL)
 				source = video;
+
+			fps.SetVideoSourceFPS(source->GetFPS());
 			break;
 		case ESCAPE_KEY:
 			running = false;

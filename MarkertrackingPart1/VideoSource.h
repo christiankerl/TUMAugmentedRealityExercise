@@ -20,6 +20,8 @@ namespace TUMAugmentedRealityExercise
 		VideoSource(void) {};
 		virtual ~VideoSource(void) {};
 
+		virtual int GetFPS(void) = 0;
+
 		virtual void GetNextImage(cv::Mat& buffer) = 0;
 	};
 
@@ -30,6 +32,8 @@ namespace TUMAugmentedRealityExercise
 	public:
 		CameraVideoSource(void);
 		~CameraVideoSource(void);
+
+		int GetFPS(void);
 
 		void GetNextImage(cv::Mat& buffer);
 	};
@@ -46,6 +50,8 @@ namespace TUMAugmentedRealityExercise
 	public:
 		FileVideoSource(const std::string& file);
 		~FileVideoSource(void);
+
+		int GetFPS(void);
 
 		void GetNextImage(cv::Mat& buffer);
 	};

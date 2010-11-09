@@ -23,6 +23,7 @@ namespace TUMAugmentedRealityExercise
 	{
 	private:
 		std::string name;
+		cv::Mat resultBuffer;
 
 		ImageProcessor* processor;
 	public:

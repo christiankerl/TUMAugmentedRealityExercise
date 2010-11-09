@@ -28,7 +28,7 @@ namespace TUMAugmentedRealityExercise
 
 	void AdaptiveThresholdImageProcessor::process(cv::Mat& input, cv::Mat& output)
 	{
-		cv::adaptiveThreshold(input, output, 255, CV_ADAPTIVE_THRESH_GAUSSIAN_C, CV_THRESH_BINARY, 55, 20);
+		cv::adaptiveThreshold(input, output, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 55, 5);
 	}
 
 	MarkerDetectionImageProcessor::MarkerDetectionImageProcessor(const MemoryStorage* memory, MarkerContainer* markers) : memory(memory), markers(markers)
@@ -39,19 +39,22 @@ namespace TUMAugmentedRealityExercise
 	{
 		CvMat image = input;
 		CvSeq* contours;
-
+		
 		cvFindContours(&image, this->memory->GetPointer(), &contours, sizeof(CvContour), CV_RETR_LIST, CV_CHAIN_APPROX_SIMPLE);
-
+		
 		for(; contours; contours = contours->h_next)
 		{
+			CvRect boundingbox = cvBoundingRect(contours, 0);
+
+			if(boundingbox.width < 15 || boundingbox.width > 150 || boundingbox.height < 15|| boundingbox.height > 150 )
+			{
+				continue;
+			}
+
 			CvSeq* rectangle = cvApproxPoly(contours, sizeof(CvContour), this->memory->GetPointer(), CV_POLY_APPROX_DP, cvContourPerimeter(contours) * 0.02, 0);
 
 			if(rectangle->total == 4)
 			{
-				CvRect boundingbox = cvBoundingRect(contours, 0);
-
-				if(boundingbox.width < 15 || boundingbox.height < 15) continue;
-
 				this->markers->push_back(cv::Seq<cv::Point>(rectangle));
 			}
 		}
@@ -76,11 +79,11 @@ namespace TUMAugmentedRealityExercise
 	void MarkerHighlightImageProcessor::HighlightMarker(cv::Mat& image, const Marker& marker)
 	{
 		int RectangleCorners[] = { 4 };
-
+		
 		const cv::Point* first = &marker.front();
 
 		cv::polylines(image, &first, RectangleCorners, 1, true, cv::Scalar(0, 0, 255), 2);
-
+		
 		for(int a = 0; a < marker.size(); a++)
 		{
 			cv::Point current = marker[a];
@@ -88,7 +91,7 @@ namespace TUMAugmentedRealityExercise
 
 			// draw circle around corner point
 			cv::circle(image, current, 2, cv::Scalar(0, 255, 0), 2);
-
+			
 			// interpolate 6 points between 2 corner points
 			double x_increment = (next.x - current.x) / 7.0;
 			double y_increment = (next.y - current.y) / 7.0;

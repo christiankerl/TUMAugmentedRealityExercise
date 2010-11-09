@@ -21,6 +21,11 @@ namespace TUMAugmentedRealityExercise
 		this->video->release();
 	}
 
+	int CameraVideoSource::GetFPS(void)
+	{
+		return (int) this->video->get(CV_CAP_PROP_FPS);
+	}
+
 	void CameraVideoSource::GetNextImage(cv::Mat& buffer)
 	{
 		*this->video >> buffer;
@@ -34,6 +39,11 @@ namespace TUMAugmentedRealityExercise
 	FileVideoSource::~FileVideoSource(void)
 	{
 		cvReleaseCapture(&this->capture);
+	}
+
+	int FileVideoSource::GetFPS(void)
+	{
+		return (int) cvGetCaptureProperty(this->capture, CV_CAP_PROP_FPS);
 	}
 
 	void FileVideoSource::GetNextImage(cv::Mat& buffer)
