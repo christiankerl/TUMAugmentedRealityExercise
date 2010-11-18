@@ -35,6 +35,12 @@
     <ClCompile Include="FPSMonitor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="CameraCalibrationApp.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessboardCameraCalibrator.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="VideoWindow.h">
@@ -50,6 +56,12 @@
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="FPSMonitor.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraCalibrationApp.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessboardCameraCalibrator.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

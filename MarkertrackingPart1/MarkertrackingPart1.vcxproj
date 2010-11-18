@@ -43,7 +43,7 @@
     <IncludePath>$(OPENCV_HOME)\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(OPENCV_HOME)\lib;$(LibraryPath)</LibraryPath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
-    <SourcePath>D:\development\infrastructure\opencv\OpenCV2.1\src;$(SourcePath)</SourcePath>
+    <SourcePath>$(OPENCV_HOME)\include;$(OPENCV_HOME)\src</SourcePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -58,6 +58,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <BrowseInformation>false</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -86,6 +87,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CameraCalibrationApp.cpp" />
+    <ClCompile Include="ChessboardCameraCalibrator.cpp" />
     <ClCompile Include="FPSMonitor.cpp" />
     <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="main.cpp" />
@@ -94,6 +97,8 @@
     <ClCompile Include="VideoWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CameraCalibrationApp.h" />
+    <ClInclude Include="ChessboardCameraCalibrator.h" />
     <ClInclude Include="FPSMonitor.h" />
     <ClInclude Include="ImageProcessor.h" />
     <ClInclude Include="MemoryStorage.h" />
