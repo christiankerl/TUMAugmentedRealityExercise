@@ -55,5 +55,19 @@ namespace TUMAugmentedRealityExercise
 
 		void GetNextImage(cv::Mat& buffer);
 	};
+
+	
+	class StaticFileVideoSource : public VideoSource
+	{
+	private:
+		cv::Mat buffer;
+	public:
+		StaticFileVideoSource(const std::string& file);
+		~StaticFileVideoSource(void);
+
+		int GetFPS(void);
+
+		void GetNextImage(cv::Mat& buffer);
+	};
 }
 

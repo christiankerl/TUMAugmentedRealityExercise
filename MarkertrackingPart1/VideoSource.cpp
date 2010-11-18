@@ -27,7 +27,7 @@ namespace TUMAugmentedRealityExercise
 	}
 
 	void CameraVideoSource::GetNextImage(cv::Mat& buffer)
-	{
+	{		
 		*this->video >> buffer;
 	}
 	
@@ -69,5 +69,25 @@ namespace TUMAugmentedRealityExercise
 	void FileVideoSource::SetCurrentFrame(int frame)
 	{
 		cvSetCaptureProperty(this->capture, CV_CAP_PROP_POS_FRAMES, frame);
+	}
+	
+	StaticFileVideoSource::StaticFileVideoSource(const std::string& file) :
+		buffer(cvLoadImageM(file.c_str()))
+	{
+		
+	}
+	
+	StaticFileVideoSource::~StaticFileVideoSource(void)
+	{
+	}
+
+	int StaticFileVideoSource::GetFPS(void)
+	{
+		return 1;
+	}
+
+	void StaticFileVideoSource::GetNextImage(cv::Mat& buffer)
+	{
+		buffer = this->buffer.clone();
 	}
 }

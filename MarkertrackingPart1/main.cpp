@@ -35,12 +35,9 @@ int main(int argc, char* argv[])
 	// setup video input
 	VideoSource* source;
 	VideoSource* camera = new CameraVideoSource();
-	VideoSource* video = NULL;
+	VideoSource* video  = new StaticFileVideoSource("marker.png");
 
-	if(argc == 2)
-		video = new FileVideoSource(std::string(argv[1]));
-
-	source = camera;
+	source = video;
 	
 	FPSMonitor fps;
 	fps.SetVideoSourceFPS(source->GetFPS());
@@ -51,6 +48,7 @@ int main(int argc, char* argv[])
 	MarkerContainer markers;
 
 	// create image processors
+	ResizeImageProcessor resize(10);
 	GreyscaleImageProcessor grey;
 	AdaptiveThresholdImageProcessor adaptive;
 	MarkerDetectionImageProcessor marker(&memory, &markers);
@@ -65,10 +63,7 @@ int main(int argc, char* argv[])
 	
 	// create ui
 	VideoWindow originWindow("AR-EX1-Origin", &highlight);
-	//VideoWindow thresholdWindow("AR-EX1-Threshold", &chain1);
-	//VideoWindow adaptiveWindow("AR-EX1-AdaptiveThreshold", &chain2);
-
-	//ThresholdTrackbar tresholdTrackbar(thresholdWindow.GetName(), &threshold);
+	VideoWindow stripeWindow("AR-EX3-Stripe", &resize);
 	
 	// start ui event loop
 	while(running)
@@ -83,6 +78,9 @@ int main(int argc, char* argv[])
 		
 		//thresholdWindow.update(inBuffer);
 		originWindow.update(inBuffer);
+
+		if(!markers.empty())
+			stripeWindow.update(*markers[0].Stripes[0].Buffer);
 
 		// clear memory resources
 		memory.Clear();
@@ -111,10 +109,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	delete camera;
-
-	if(video != NULL)
-		delete video;
+	delete camera, video;
 
 	return 0;
 }

@@ -19,8 +19,43 @@
 
 namespace TUMAugmentedRealityExercise
 {
-	typedef std::vector<cv::Point > Marker;
-	typedef std::vector<Marker > MarkerContainer;
+	class MarkerStripe
+	{
+	private:
+		int SampleSubPixelFromImage(const cv::Mat image, cv::Point2d p);
+	public:
+		cv::Mat* Buffer;
+
+		cv::Point2d Center;
+		cv::Point2d SubPixelCenter;
+		std::vector<cv::Point2d> Corners;
+
+		int Width;
+		int Height;
+
+		cv::Point2d IterationNormalX;
+		cv::Point2d IterationNormalY;
+
+		MarkerStripe(void);
+		MarkerStripe(const MarkerStripe& copy);
+		~MarkerStripe(void);
+
+		void SampleFromImage(const cv::Mat& image);
+		void CalculateSubPixelCenter(void);
+	};
+
+	class Marker
+	{
+	public:
+		std::vector<cv::Point> Corners;
+		std::vector<MarkerStripe> Stripes;
+
+		Marker(std::vector<cv::Point> corners);
+		Marker(const Marker& copy);
+		~Marker(void) {};
+	};
+	
+	typedef std::vector<Marker> MarkerContainer;
 
 	class ImageProcessor
 	{
@@ -33,6 +68,17 @@ namespace TUMAugmentedRealityExercise
 	public:
 		NullImageProcessor(void) {};
 		~NullImageProcessor(void) {};
+
+		void process(cv::Mat& input, cv::Mat& output);
+	};
+
+	class ResizeImageProcessor : public ImageProcessor
+	{
+	private:
+		double factor;
+	public:
+		ResizeImageProcessor(double factor) : factor(factor) {};
+		~ResizeImageProcessor(void) {};
 
 		void process(cv::Mat& input, cv::Mat& output);
 	};
@@ -71,6 +117,7 @@ namespace TUMAugmentedRealityExercise
 	private:
 		const MemoryStorage* memory;
 		MarkerContainer* markers;
+
 	public:
 		MarkerDetectionImageProcessor(const MemoryStorage* memory, MarkerContainer* markers);
 		~MarkerDetectionImageProcessor(void) {};
