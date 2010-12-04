@@ -35,10 +35,16 @@
     <ClCompile Include="FPSMonitor.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="CameraCalibrationApp.cpp">
+    <ClCompile Include="PoseEstimation.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="ChessboardCameraCalibrator.cpp">
+    <ClCompile Include="Marker.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="VectorUtil.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugImage.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
@@ -58,10 +64,16 @@
     <ClInclude Include="FPSMonitor.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="CameraCalibrationApp.h">
+    <ClInclude Include="PoseEstimation.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
-    <ClInclude Include="ChessboardCameraCalibrator.h">
+    <ClInclude Include="Marker.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorUtil.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugImage.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>

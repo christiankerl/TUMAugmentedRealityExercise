@@ -11,161 +11,6 @@
 
 namespace TUMAugmentedRealityExercise
 {
-	double length(cv::Point2d vector)
-	{
-		return sqrt(vector.x*vector.x + vector.y*vector.y);
-	}
-
-	cv::Point2d normalize(cv::Point2d vector)
-	{
-		double norm =  1.0 / length(vector);
-
-		return cv::Point2d(norm * vector.x, norm * vector.y);
-	}
-
-	MarkerStripe::MarkerStripe(void) : Buffer(NULL), Width(-1), Height(-1)
-	{
-	}
-
-	MarkerStripe::MarkerStripe(const MarkerStripe& copy) :
-		Buffer(copy.Buffer),
-
-		Center(copy.Center),
-		SubPixelCenter(copy.SubPixelCenter),
-		Corners(copy.Corners),
-
-		Width(copy.Width),
-		Height(copy.Height),
-
-		IterationNormalX(copy.IterationNormalX),
-		IterationNormalY(copy.IterationNormalY)
-	{
-
-	}
-
-	MarkerStripe::~MarkerStripe(void) 
-	{
-	}
-
-	int MarkerStripe::SampleSubPixelFromImage(const cv::Mat image, cv::Point2d p)
-	{
-		int x = int( floorf ( p.x ) );
-		int y = int( floorf ( p.y ) );
-
-		if ( x < 0 || x >= image.cols  - 1 || y < 0 || y >= image.rows - 1 )
-			return 127;
-		
-		int dx = int ( 256 * ( p.x - floorf ( p.x ) ) );
-		int dy = int ( 256 * ( p.y - floorf ( p.y ) ) );
-
-		unsigned char* i = ( unsigned char* ) ( ( image.data + y * image.step ) + x );
-		int a = i[ 0 ] + ( ( dx * ( i[ 1 ] - i[ 0 ] ) ) >> 8 );
-		i += image.step;
-		int b = i[ 0 ] + ( ( dx * ( i[ 1 ] - i[ 0 ] ) ) >> 8 );
-		return a + ( ( dy * ( b - a) ) >> 8 );
-	}
-
-	void MarkerStripe::SampleFromImage(const cv::Mat& image)
-	{
-		if(Width <= 0 || Height <= 0 || Buffer != NULL)
-			return;
-
-		Buffer = new cv::Mat(Height, Width, CV_8UC1);
-		unsigned char* data = Buffer->data;
-
-		cv::Point2d it = Corners[0];
-
-		for(int y = 0; y < Height; y++)
-		{
-			for(int x = 0; x < Width; x++, data++, it +=IterationNormalX)
-			{
-				*data = SampleSubPixelFromImage(image, it);
-			}
-
-			it = Corners[0] + IterationNormalY;
-		}
-	}
-
-	void MarkerStripe::CalculateSubPixelCenter(void)
-	{
-		if(Buffer == NULL)
-			return;
-
-		unsigned char* row1Data = Buffer->data;
-		unsigned char* row2Data = Buffer->data + Buffer->step;
-		unsigned char* row3Data = Buffer->data + (2 * Buffer->step);
-		int* derivative = new int[Width];
-
-		for(int a = 1; a < Width - 1; a++) {
-			derivative[a] = 
-				(-1 * row1Data[a - 1]) + 
-				(-2 * row2Data[a - 1]) + 
-				(-1 * row3Data[a - 1]) +
-				(1 * row1Data[a + 1]) + 
-				(2 * row2Data[a + 1]) + 
-				(1 * row3Data[a + 1]);
-		}
-		
-		derivative[0] = derivative[1];
-		derivative[Width - 1] = derivative[Width - 2];
-
-		int min = 255;
-		int minSum = 255 * 3;
-		int minIndex = -1;
-		
-		// find discrete minimum
-		for(int a = 1; a < Width - 1; a++)
-		{
-			int value = derivative[a];
-
-			if(value <= min)
-			{
-				int sum = derivative[a - 1] + value + derivative[a + 1];
-
-				if(sum < minSum)
-				{
-					min = value;
-					minSum = sum;
-					minIndex = a;
-				}
-			}
-		}
-
-		if(minIndex == -1)
-			return;
-
-		int left = derivative[minIndex - 1];
-		int right = derivative[minIndex + 1];
-
-		// y = ax²+bx+c
-		// y'= 2ax+b 
-		// c = min
-		// b = (right - left) / 2
-		// a = right - b
-
-		double b = (right - left) / 2.0;
-		double a = right - b;
-
-		// xmin equals the offset to minIndex where the interpolated minimum is
-		double xmin = a != 0 ? (-1.0 * b) / (2.0 * a) : 0;
-		
-		// calculate absolute sub pixel center from center
-		SubPixelCenter = this->Center + (this->IterationNormalY * xmin);
-
-		//std::cout << Center.x << " " << Center.y << std::endl;
-		//std::cout << SubPixelCenter.x << " " << SubPixelCenter.y << std::endl << std::endl;
-
-		delete derivative;
-	}
-
-	Marker::Marker(std::vector<cv::Point> corners) : Corners(corners) 
-	{
-	}
-
-	Marker::Marker(const Marker& copy) : Corners(copy.Corners), Stripes(copy.Stripes)
-	{
-	}
-
 	void NullImageProcessor::process(cv::Mat& input, cv::Mat& output)
 	{
 		output = input;
@@ -173,7 +18,7 @@ namespace TUMAugmentedRealityExercise
 
 	void ResizeImageProcessor::process(cv::Mat& input, cv::Mat& output)
 	{
-		cv::resize(input, output, cv::Size(), this->factor, this->factor);
+		cv::resize(input, output, cv::Size(), this->factor, this->factor, 0);
 	}
 
 	void GreyscaleImageProcessor::process(cv::Mat& input, cv::Mat& output)
@@ -262,7 +107,14 @@ namespace TUMAugmentedRealityExercise
 					}
 				}
 
-				this->markers->push_back(marker);
+				marker.CalculateSubPixelCorners();
+
+				if(marker.SampleFromImageAndDecode(input))
+				{
+					marker.EstimatePose();
+
+					this->markers->push_back(marker);
+				}
 			}
 		}		
 	}
@@ -288,11 +140,19 @@ namespace TUMAugmentedRealityExercise
 		
 		const cv::Point* first = &marker.Corners.front();
 
-		cv::polylines(image, &first, RectangleCorners, 1, true, cv::Scalar(0, 0, 255), 2);
+		cv::polylines(image, &first, RectangleCorners, 1, true, cv::Scalar(0, 0, 255), 1);
+
+		int r = 0;
+
+		for(int a = 0; a < marker.SubPixelCorners.size(); a++)
+		{
+			cv::circle(image, marker.SubPixelCorners[a], 2, cv::Scalar(255 - r, 0, r), 2);
+			r += 60;
+		}
 		
 		for(int a = 0; a < marker.Corners.size(); a++)
 		{
-			cv::circle(image, marker.Corners[a], 2, cv::Scalar(0, 255, 0), 2);
+			cv::circle(image, marker.Corners[a], 1, cv::Scalar(0, 255, 0), 1);
 		}
 
 		std::vector<cv::Point> stripeCorners;
@@ -302,7 +162,7 @@ namespace TUMAugmentedRealityExercise
 			stripeCorners.assign(marker.Stripes[a].Corners.begin(), marker.Stripes[a].Corners.end());
 			const cv::Point* firstStripeCorner = &stripeCorners.front();
 
-			cv::polylines(image, &firstStripeCorner, RectangleCorners, 1, true, cv::Scalar(255, 255, 0));
+			cv::polylines(image, &firstStripeCorner, RectangleCorners, 1, true, cv::Scalar(a*10, 255 - a * 10, 0));
 		}
 	}
 

@@ -16,47 +16,10 @@
 #include <opencv\highgui.h>
 
 #include "MemoryStorage.h"
+#include "Marker.h"
 
 namespace TUMAugmentedRealityExercise
 {
-	class MarkerStripe
-	{
-	private:
-		int SampleSubPixelFromImage(const cv::Mat image, cv::Point2d p);
-	public:
-		cv::Mat* Buffer;
-
-		cv::Point2d Center;
-		cv::Point2d SubPixelCenter;
-		std::vector<cv::Point2d> Corners;
-
-		int Width;
-		int Height;
-
-		cv::Point2d IterationNormalX;
-		cv::Point2d IterationNormalY;
-
-		MarkerStripe(void);
-		MarkerStripe(const MarkerStripe& copy);
-		~MarkerStripe(void);
-
-		void SampleFromImage(const cv::Mat& image);
-		void CalculateSubPixelCenter(void);
-	};
-
-	class Marker
-	{
-	public:
-		std::vector<cv::Point> Corners;
-		std::vector<MarkerStripe> Stripes;
-
-		Marker(std::vector<cv::Point> corners);
-		Marker(const Marker& copy);
-		~Marker(void) {};
-	};
-	
-	typedef std::vector<Marker> MarkerContainer;
-
 	class ImageProcessor
 	{
 	public:

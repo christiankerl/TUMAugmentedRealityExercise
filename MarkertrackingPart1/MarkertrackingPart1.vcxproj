@@ -87,21 +87,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="CameraCalibrationApp.cpp" />
-    <ClCompile Include="ChessboardCameraCalibrator.cpp" />
+    <ClCompile Include="DebugImage.cpp" />
     <ClCompile Include="FPSMonitor.cpp" />
     <ClCompile Include="ImageProcessor.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Marker.cpp" />
     <ClCompile Include="MemoryStorage.cpp" />
+    <ClCompile Include="PoseEstimation.cpp" />
+    <ClCompile Include="VectorUtil.cpp" />
     <ClCompile Include="VideoSource.cpp" />
     <ClCompile Include="VideoWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CameraCalibrationApp.h" />
-    <ClInclude Include="ChessboardCameraCalibrator.h" />
+    <ClInclude Include="DebugImage.h" />
     <ClInclude Include="FPSMonitor.h" />
     <ClInclude Include="ImageProcessor.h" />
+    <ClInclude Include="Marker.h" />
     <ClInclude Include="MemoryStorage.h" />
+    <ClInclude Include="PoseEstimation.h" />
+    <ClInclude Include="VectorUtil.h" />
     <ClInclude Include="VideoSource.h" />
     <ClInclude Include="VideoWindow.h" />
   </ItemGroup>

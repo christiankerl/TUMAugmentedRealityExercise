@@ -18,6 +18,7 @@
 #include "VideoSource.h"
 #include "VideoWindow.h"
 #include "FPSMonitor.h"
+#include "DebugImage.h"
 
 #define ESCAPE_KEY 27
 #define C_KEY 99
@@ -45,6 +46,7 @@ int main(int argc, char* argv[])
 	// create dynamic memory
 	MemoryStorage memory;
 
+	Marker::RealSize = 3.25;
 	MarkerContainer markers;
 
 	// create image processors
@@ -61,9 +63,11 @@ int main(int argc, char* argv[])
 	chain1.add(&adaptive);
 	chain1.add(&marker);
 	
+	DebugImage dbg;
+
 	// create ui
 	VideoWindow originWindow("AR-EX1-Origin", &highlight);
-	VideoWindow stripeWindow("AR-EX3-Stripe", &resize);
+	VideoWindow stripeWindow("AR-EX3-Marker", &resize);
 	
 	// start ui event loop
 	while(running)
@@ -79,8 +83,7 @@ int main(int argc, char* argv[])
 		//thresholdWindow.update(inBuffer);
 		originWindow.update(inBuffer);
 
-		if(!markers.empty())
-			stripeWindow.update(*markers[0].Stripes[0].Buffer);
+		stripeWindow.update(dbg.Buffer);
 
 		// clear memory resources
 		memory.Clear();
